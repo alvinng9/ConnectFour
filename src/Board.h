@@ -17,6 +17,7 @@ public:
     void setPiece(string piece, int row, int col);
     int getRows() const;
     int getCols() const;
+    bool inBounds(int row, int col) const;
 };
 
 #endif // BOARD_H

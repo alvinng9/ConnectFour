@@ -31,3 +31,7 @@ int Board::getCols() const{
     return boardVector[0].size();
 }
 
+bool Board::inBounds(int row, int col) const{
+    return (row >= 0 && row < getRows() && col >= 0 && col < getCols());
+}
+
