@@ -1,33 +1,45 @@
 #include "BoardManager.h"
+#include "gsound.h"
 
 BoardManager::BoardManager(Board* board){
     this->board = board;
     p1Turn = true;
+    connectSum = 4;
+    finishedDropping = false;
+    pieceDrop = false;
 }
 
 void BoardManager::dropPiece(int col){
     string pieceHere = board->getPiece(0,col);
     int rowHere = 0;
     int rowCount = board->getRows();
-    while (pieceHere != "" && rowHere < rowCount){
+    while (pieceHere != "" && rowHere < rowCount - 1){
         rowHere++;
         pieceHere = board->getPiece(rowHere,col);
     }
-    cout << "test" <<endl;
-    if (rowHere != rowCount){
+    if (rowHere < rowCount && pieceHere == ""){
         string piece = "";
         if (p1Turn){
             piece = "P1";
-            cout << "test" <<endl;
         } else {
             piece = "P2";
         }
-        board->setPiece(piece,rowHere,col);
+        currentRow = rowCount - 1;
+        //pieceDrop = true;
+        rowDifference = rowCount - rowHere - 1;
+        currentCol = col;
+        if (rowDifference > 0){
+            pieceDrop = true;
+        }
+        //board->setPiece(piece,rowHere,col);
+        board->setPiece(piece, currentRow, col);
         p1Turn = !p1Turn;
+        //sgl::GSound::playSound("woosh.mp3");
     }
 }
 
-bool BoardManager::isWon(){
+bool BoardManager::isWon() {
+    finishedDropping = false;
     for (int row = 0; row < board->getRows(); row++){
         for (int col = 0; col < board->getCols(); col++){
             if (isWon(0, row, col, 0, 0, " ")){
@@ -45,7 +57,7 @@ bool BoardManager::isWon(int sum, int row, int col,int dirVert, int dirHor, stri
     }
 
     string player = board->getPiece(row, col);
-    if (sum == 5){
+    if (sum == connectSum){
         return true;
     } else if (player == "") {
         return false;
@@ -53,14 +65,14 @@ bool BoardManager::isWon(int sum, int row, int col,int dirVert, int dirHor, stri
 
     // comments here to be neater
     if (dirVert == dirHor && dirVert == 0) {
-        bool n = isWon(sum + 1, row, col, -1, 0, player); //North
-        bool s = isWon(sum + 1, row, col, 1, 0, player); //South
-        bool w = isWon(sum + 1, row, col, 0, -1, player); //West
-        bool e = isWon(sum + 1, row, col, 0, 1, player); //East
-        bool nw = isWon(sum + 1, row, col, -1, -1, player); //Northwest
-        bool ne = isWon(sum + 1, row, col, -1, 1, player); //Northeast
-        bool sw = isWon(sum + 1, row, col, 1, -1, player); //Southwest
-        bool se = isWon(sum + 1, row, col, 1, 1, player); //Southeast
+        bool n = isWon(sum, row, col, -1, 0, player); //North
+        bool s = isWon(sum, row, col, 1, 0, player); //South
+        bool w = isWon(sum, row, col, 0, -1, player); //West
+        bool e = isWon(sum, row, col, 0, 1, player); //East
+        bool nw = isWon(sum, row, col, -1, -1, player); //Northwest
+        bool ne = isWon(sum, row, col, -1, 1, player); //Northeast
+        bool sw = isWon(sum, row, col, 1, -1, player); //Southwest
+        bool se = isWon(sum, row, col, 1, 1, player); //Southeast
         return (n || s || w || e || nw || ne || sw || se);
     } else {
         if (player == target){
@@ -69,10 +81,6 @@ bool BoardManager::isWon(int sum, int row, int col,int dirVert, int dirHor, stri
             return false;
         }
     }
-}
-
-string BoardManager::winner(){
-    return "test";
 }
 
 void BoardManager::save(){
@@ -106,3 +114,45 @@ void BoardManager::load(){
     }
     input.close();
 }
+
+void BoardManager::resetBoard(){
+    p1Turn = true;
+    board->resetBoard(board->getRows(),board->getCols());
+}
+
+bool BoardManager::isP1Turn() const{
+    return p1Turn;
+}
+
+bool BoardManager::isPieceDrop() const{
+    return pieceDrop;
+}
+int BoardManager::getCurentRow() const{
+    return currentRow;
+}
+int BoardManager::getRowDifference() const{
+    return rowDifference;
+}
+int BoardManager::getCurrentCol() const {
+    return currentCol;
+}
+
+void BoardManager::animate(){
+    currentRow--;
+    rowDifference--;
+    if (rowDifference == 0) {
+        pieceDrop = false;
+        finishedDropping = true;
+    }
+}
+
+bool BoardManager::isFinishedDropping() const{
+    return finishedDropping;
+}
+
+void BoardManager::setConnectSum(int num) {
+    this->connectSum = num;
+}
+
+
+

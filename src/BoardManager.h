@@ -8,13 +8,27 @@ private:
     Board* board;
     bool p1Turn;
     bool isWon(int sum, int row, int col, int dirVert, int dirRow, string target);
+    int rowDifference;
+    bool pieceDrop;
+    int currentRow;
+    int currentCol;
+    bool finishedDropping;
+    int connectSum;
 public:
     BoardManager(Board* board);
     void dropPiece(int col);
     bool isWon();
-    string winner();
     void save();
     void load();
+    void resetBoard();
+    bool isP1Turn() const;
+    bool isPieceDrop() const;
+    int getCurentRow() const;
+    int getRowDifference() const;
+    int getCurrentCol() const;
+    void animate();
+    bool isFinishedDropping() const;
+    void setConnectSum(int num);
 };
 
 #endif // BOARDMANAGER_H

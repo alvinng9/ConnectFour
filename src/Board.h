@@ -18,6 +18,7 @@ public:
     int getRows() const;
     int getCols() const;
     bool inBounds(int row, int col) const;
+    void resetBoard(int row, int col);
 };
 
 #endif // BOARD_H

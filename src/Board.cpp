@@ -4,14 +4,21 @@ Board::Board(int row, int col){
     if (row == 0 || col == 0){
         throw "bad";
     } else {
-        boardVector = new vector<vector<string>>;
-        for (int i = 0; i < row; i++){
-            vector<string> rowVector;
-            for (int j = 0; j < col; j++){
-                rowVector.push_back("");
-            }
-            boardVector->push_back(rowVector);
+        resetBoard(row, col);
+    }
+}
+
+void Board::resetBoard(int row, int col){
+    /*if (boardVector != nullptr){
+        delete boardVector;
+    }*/
+    boardVector = new vector<vector<string>>;
+    for (int i = 0; i < row; i++){
+        vector<string> rowVector;
+        for (int j = 0; j < col; j++){
+            rowVector.push_back("");
         }
+        boardVector->push_back(rowVector);
     }
 }
 
