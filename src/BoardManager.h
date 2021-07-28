@@ -19,12 +19,11 @@ public:
     void dropPiece(int col);
     bool isWon();
     void save();
-    void load();
-    void resetBoard();
+    void load(int& size, int& sum);
+    void resetBoard(int size);
     bool isP1Turn() const;
     bool isPieceDrop() const;
     int getCurentRow() const;
-    int getRowDifference() const;
     int getCurrentCol() const;
     void animate();
     bool isFinishedDropping() const;

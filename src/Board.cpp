@@ -1,21 +1,22 @@
 #include "Board.h"
 
-Board::Board(int row, int col){
-    if (row == 0 || col == 0){
+Board::Board(int size){
+    if (size == 0){
         throw "bad";
     } else {
-        resetBoard(row, col);
+        boardVector = nullptr;
+        resetBoard(size);
     }
 }
 
-void Board::resetBoard(int row, int col){
-    /*if (boardVector != nullptr){
+void Board::resetBoard(int size){
+    if (boardVector != nullptr){
         delete boardVector;
-    }*/
+    }
     boardVector = new vector<vector<string>>;
-    for (int i = 0; i < row; i++){
+    for (int i = 0; i < size; i++){
         vector<string> rowVector;
-        for (int j = 0; j < col; j++){
+        for (int j = 0; j < size; j++){
             rowVector.push_back("");
         }
         boardVector->push_back(rowVector);
@@ -30,15 +31,12 @@ void Board::setPiece(string piece, int row, int col){
     (*boardVector)[row][col] = piece;
 }
 
-int Board::getRows() const{
+int Board::getSize() const{
     return boardVector->size();
 }
 
-int Board::getCols() const{
-    return boardVector[0].size();
-}
 
 bool Board::inBounds(int row, int col) const{
-    return (row >= 0 && row < getRows() && col >= 0 && col < getCols());
+    return (row >= 0 && row < getSize() && col >= 0 && col < getSize());
 }
 

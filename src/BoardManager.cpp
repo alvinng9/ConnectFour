@@ -12,7 +12,7 @@ BoardManager::BoardManager(Board* board){
 void BoardManager::dropPiece(int col){
     string pieceHere = board->getPiece(0,col);
     int rowHere = 0;
-    int rowCount = board->getRows();
+    int rowCount = board->getSize();
     while (pieceHere != "" && rowHere < rowCount - 1){
         rowHere++;
         pieceHere = board->getPiece(rowHere,col);
@@ -25,14 +25,14 @@ void BoardManager::dropPiece(int col){
             piece = "P2";
         }
         currentRow = rowCount - 1;
-        //pieceDrop = true;
         rowDifference = rowCount - rowHere - 1;
         currentCol = col;
+        board->setPiece(piece, currentRow, col);
         if (rowDifference > 0){
             pieceDrop = true;
+        } else {
+            finishedDropping = true;
         }
-        //board->setPiece(piece,rowHere,col);
-        board->setPiece(piece, currentRow, col);
         p1Turn = !p1Turn;
         //sgl::GSound::playSound("woosh.mp3");
     }
@@ -40,8 +40,8 @@ void BoardManager::dropPiece(int col){
 
 bool BoardManager::isWon() {
     finishedDropping = false;
-    for (int row = 0; row < board->getRows(); row++){
-        for (int col = 0; col < board->getCols(); col++){
+    for (int row = 0; row < board->getSize(); row++){
+        for (int col = 0; col < board->getSize(); col++){
             if (isWon(0, row, col, 0, 0, " ")){
                 return true;
             }
@@ -51,7 +51,6 @@ bool BoardManager::isWon() {
 }
 
 bool BoardManager::isWon(int sum, int row, int col,int dirVert, int dirHor, string target){
-    //base case
     if (!board->inBounds(row, col)){
         return false;
     }
@@ -86,38 +85,45 @@ bool BoardManager::isWon(int sum, int row, int col,int dirVert, int dirHor, stri
 void BoardManager::save(){
     ofstream outFile;
     outFile.open ("output.txt");
-    outFile << board->getRows() << " " << board->getCols() << " " << p1Turn << endl;
-    for (int row = 0; row < board->getRows(); row++){
-        for (int col = 0; col < board->getCols(); col++){
-            outFile << board->getPiece(row, col) << " ";
+    outFile << board->getSize() << " " << p1Turn << " " << connectSum << " " <<  endl;
+    for (int row = 0; row < board->getSize(); row++){
+        for (int col = 0; col < board->getSize(); col++){
+            string piece = board->getPiece(row, col);
+            if (piece == ""){
+                outFile << "P0" << " ";
+            } else {
+                outFile << piece << " ";
+            }
         }
         outFile << endl;
     }
     outFile.close();
 }
 
-void BoardManager::load(){
+void BoardManager::load(int& size, int& sum){
     ifstream input;
     input.open("output.txt");
     string piece;
-    int rowCount = 0;
-    int colCount = 0;
-    input >> rowCount;
-    input >> colCount;
+    input >> size;
     input >> p1Turn;
-    while (input >> piece){
-        for (int row = 0; row < rowCount; row++){
-            for (int col = 0; col < colCount; col++){
-                board->setPiece(piece, row, col);
+    input >> connectSum;
+    sum = connectSum;
+    board->resetBoard(size);
+    for (int row = 0; row < size; row++){
+        for (int col = 0; col < size; col++){
+            input >> piece;
+            if (piece == "P0"){
+                piece = "";
             }
+            board->setPiece(piece, row, col);
         }
     }
     input.close();
 }
 
-void BoardManager::resetBoard(){
+void BoardManager::resetBoard(int size){
     p1Turn = true;
-    board->resetBoard(board->getRows(),board->getCols());
+    board->resetBoard(size);
 }
 
 bool BoardManager::isP1Turn() const{
@@ -129,9 +135,6 @@ bool BoardManager::isPieceDrop() const{
 }
 int BoardManager::getCurentRow() const{
     return currentRow;
-}
-int BoardManager::getRowDifference() const{
-    return rowDifference;
 }
 int BoardManager::getCurrentCol() const {
     return currentCol;

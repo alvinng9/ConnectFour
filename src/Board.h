@@ -12,13 +12,12 @@ class Board{
 private:
     vector<vector<string>>* boardVector;
 public:
-    Board(int row, int col);
+    Board(int size);
     string getPiece(int row, int col) const;
     void setPiece(string piece, int row, int col);
-    int getRows() const;
-    int getCols() const;
+    int getSize() const;
     bool inBounds(int row, int col) const;
-    void resetBoard(int row, int col);
+    void resetBoard(int size);
 };
 
 #endif // BOARD_H
