@@ -14,7 +14,10 @@
 #include "gcontainer.h"
 #include "gfont.h"
 
+GContainer* panelResetStats;
+GButton* btnStats;
 GButton* btnReset;
+GButton* btnClose;
 GLabel* lblWin;
 GTextField* textOne;
 GTextField* textTwo;
@@ -29,12 +32,17 @@ GButton* btnColorP2;
 GButton* btnLoad;
 GButton* btnSave;
 GContainer* panelSaveLoad;
+string nameP1;
+string nameP2;
+
+
 
 extern ConnectGUI* connectGUI;
 
 void clickHandler(GEvent mouseEvent);
 
 ConnectGUI::ConnectGUI(){
+    statsGame = {0, 0, 0};
     colorP1 = "red";
     colorP2 = "blue";
     window = new GWindow(550,400);
@@ -73,18 +81,23 @@ void ConnectGUI::checkWinner(){
         bool p1Turn = !manager->isP1Turn();
         string winnerName;
         if (p1Turn){
-            winnerName = textOne->getText();
+            statsGame[0]++;
+            winnerName = nameP1;
         } else {
-            winnerName = textTwo->getText();
+            statsGame[1]++;
+            winnerName = nameP2;
         }
-        if (winnerName == ""){
-            winnerName = "An anonymous";
-        }
-        winnerName += " won!";
+        redraw();
+        winnerName += " Won!";
         lblWin->setText(winnerName);
         btnReset->setEnabled(true);
         window->removeClickListener();
+    } else if (manager->getPieceCount() == pow(board->getSize(),2)){
+        statsGame[2]++;
         redraw();
+        lblWin->setText("The Game Has Tied");
+        btnReset->setEnabled(true);
+        window->removeClickListener();
     }
 }
 
@@ -105,6 +118,16 @@ void ConnectGUI::redraw(){
                                * TILESIZE + OFFSET, TILESIZE - OFFSET * 2,
                                  TILESIZE - OFFSET * 2);
         }
+    }
+
+    if (!btnStartGame->isEnabled()){
+        string name;
+        if (manager->isP1Turn()){
+            name = nameP1;
+        } else {
+            name = nameP2;
+        }
+        lblWin->setText(name + "'s turn");
     }
     window->repaint();
 }
@@ -157,15 +180,16 @@ void ConnectGUI::toggle(bool setEnable){
     sldrConnectSum->setEnabled(setEnable);
     sldrNumTile->setEnabled(setEnable);
     btnStartGame->setEnabled(setEnable);
-    textOne->setEnabled(setEnable);
-    textTwo->setEnabled(setEnable);
+    textOne->setEnabled(false);
+    textTwo->setEnabled(false);
 }
 
 void ConnectGUI::loadGame(){
     int size;
     int sum;
-    manager->load(size, sum);
+    manager->reSize(size);
     sldrNumTile->setValue(size);
+    manager->load(sum);
     sldrConnectSum->setValue(sum);
     toggle(false);
     window->setClickListener(clickHandler);
@@ -176,11 +200,11 @@ void ConnectGUI::loadGame(){
 
 void ConnectGUI::makeMenu(){
     makeSliders();
-    /*sldrNumTile->setClickListener([this] {
-        cout << "does this work?" << endl;
+
+    sldrNumTile->setActionListener([this] {
         manager->resetBoard(sldrNumTile->getValue());
         redraw();
-    });*/
+    });
 
     btnColorP1 = makeColorChooser(colorP1);
     btnColorP2 = makeColorChooser(colorP2);
@@ -190,7 +214,17 @@ void ConnectGUI::makeMenu(){
 
     btnStartGame = new GButton("Start Game");
     btnStartGame->setClickListener([this] {
-        manager->resetBoard(sldrNumTile->getValue());
+        nameP1 = textOne->getText();
+        nameP2 = textTwo->getText();
+        string name;
+        if (nameP1 == "" && nameP2 == "") {
+            nameP1 = "An Anonymous";
+            nameP2 = "The Other Anonymous";
+        } else if (nameP1 == "") {
+            nameP1 = "An Anonymous";
+        } else if (nameP2 == ""){
+            nameP2 = "An Anonymous";
+        }
         manager->setConnectSum(sldrConnectSum->getValue());
         toggle(false);
         window->setClickListener(clickHandler);
@@ -198,9 +232,11 @@ void ConnectGUI::makeMenu(){
     });
     window->addToRegion(btnStartGame, "East");
 
-    lblWin = new GLabel();
+    lblWin = new GLabel("Press 'Start Game' to Begin");
     GFont::changeFontSize(lblWin, 20);
     window->addToRegion(lblWin, "South");
+
+    panelResetStats = new GContainer;
 
     btnReset = new GButton("Reset");
     btnReset->setEnabled(false);
@@ -211,7 +247,32 @@ void ConnectGUI::makeMenu(){
         toggle(true);
         redraw();
     });
-    window->addToRegion(btnReset, "East");
+
+    btnStats = new GButton("Statistics");
+    btnStats->setClickListener([this] {
+        GWindow* popUpWindow = new GWindow(250,100);
+        popUpWindow->setLocation(450, 300);
+        popUpWindow->setBackground("black");
+        popUpWindow->setExitOnClose(false);
+        popUpWindow->setAutoRepaint(false);
+        popUpWindow->setTitle("Statistics");
+        string statsP1 = textOne->getText() + " has won " + to_string(statsGame[0]) + " time(s)";
+        popUpWindow->drawString(statsP1, 20, 21);
+        string statsP2 = textTwo->getText() + " has won " + to_string(statsGame[1]) + " time(s)";
+        popUpWindow->drawString(statsP2, 20, 41);
+        string statsDraw = "There has/have been " + to_string(statsGame[2]) + " tie(s)";
+        popUpWindow->drawString(statsDraw, 20, 61);
+
+        btnClose = new GButton("Close");
+        btnClose->setClickListener([popUpWindow] {
+            popUpWindow->close();
+        });
+        popUpWindow->addToRegion(btnClose, "South");
+    });
+
+    panelResetStats->add(btnReset);
+    panelResetStats->add(btnStats);
+    window->addToRegion(panelResetStats, "East");
 
     panelSaveLoad = new GContainer();
     btnLoad = new GButton("Load");
@@ -233,3 +294,5 @@ void clickHandler(GEvent mouseEvent){
     connectGUI->getBoardManager()->dropPiece(col);
     connectGUI->redraw();
 }
+
+

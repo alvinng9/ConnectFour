@@ -7,6 +7,7 @@ BoardManager::BoardManager(Board* board){
     connectSum = 4;
     finishedDropping = false;
     pieceDrop = false;
+    pieceCount = 0;
 }
 
 void BoardManager::dropPiece(int col){
@@ -18,6 +19,7 @@ void BoardManager::dropPiece(int col){
         pieceHere = board->getPiece(rowHere,col);
     }
     if (rowHere < rowCount && pieceHere == ""){
+        pieceCount++;
         string piece = "";
         if (p1Turn){
             piece = "P1";
@@ -40,6 +42,9 @@ void BoardManager::dropPiece(int col){
 
 bool BoardManager::isWon() {
     finishedDropping = false;
+    if (pieceCount == pow(board->getSize(),2)){
+        return false;
+    }
     for (int row = 0; row < board->getSize(); row++){
         for (int col = 0; col < board->getSize(); col++){
             if (isWon(0, row, col, 0, 0, " ")){
@@ -85,7 +90,7 @@ bool BoardManager::isWon(int sum, int row, int col,int dirVert, int dirHor, stri
 void BoardManager::save(){
     ofstream outFile;
     outFile.open ("output.txt");
-    outFile << board->getSize() << " " << p1Turn << " " << connectSum << " " <<  endl;
+    outFile << board->getSize() << " " << p1Turn << " " << connectSum << " " << pieceCount <<  endl;
     for (int row = 0; row < board->getSize(); row++){
         for (int col = 0; col < board->getSize(); col++){
             string piece = board->getPiece(row, col);
@@ -100,15 +105,16 @@ void BoardManager::save(){
     outFile.close();
 }
 
-void BoardManager::load(int& size, int& sum){
+void BoardManager::load(int& sum){
     ifstream input;
     input.open("output.txt");
     string piece;
+    int size;
     input >> size;
     input >> p1Turn;
     input >> connectSum;
+    input >> pieceCount;
     sum = connectSum;
-    board->resetBoard(size);
     for (int row = 0; row < size; row++){
         for (int col = 0; col < size; col++){
             input >> piece;
@@ -121,7 +127,16 @@ void BoardManager::load(int& size, int& sum){
     input.close();
 }
 
+void BoardManager::reSize(int& size){
+    ifstream input;
+    input.open("output.txt");
+    input >> size;
+    resetBoard(size);
+    input.close();
+}
+
 void BoardManager::resetBoard(int size){
+    pieceCount = 0;
     p1Turn = true;
     board->resetBoard(size);
 }
@@ -157,5 +172,6 @@ void BoardManager::setConnectSum(int num) {
     this->connectSum = num;
 }
 
-
-
+int BoardManager::getPieceCount() const{
+    return pieceCount;
+}

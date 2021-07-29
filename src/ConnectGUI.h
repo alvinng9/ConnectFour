@@ -29,6 +29,7 @@ private:
     void loadGame();
     void lowerPiece();
     void checkWinner();
+    vector<int> statsGame;
 public:
     ConnectGUI();
     void redraw();

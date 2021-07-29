@@ -14,12 +14,13 @@ private:
     int currentCol;
     bool finishedDropping;
     int connectSum;
+    int pieceCount;
 public:
     BoardManager(Board* board);
     void dropPiece(int col);
     bool isWon();
     void save();
-    void load(int& size, int& sum);
+    void load(int& sum);
     void resetBoard(int size);
     bool isP1Turn() const;
     bool isPieceDrop() const;
@@ -28,6 +29,8 @@ public:
     void animate();
     bool isFinishedDropping() const;
     void setConnectSum(int num);
+    void reSize(int& size);
+    int getPieceCount() const;
 };
 
 #endif // BOARDMANAGER_H
