@@ -1,3 +1,16 @@
+/**
+ * @file BoardManager.cpp
+ * @author Alvin Nguyen (https://github.com/alvinng9)
+ * @author John Nguyen (https://github.com/jvn1567)
+ * @brief This class handles running the Connect Four game by keeping track
+ * of the game state and passing information between the GUI and board.
+ * @version 0.1
+ * @date 2021-07-29
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
+
 #include "BoardManager.h"
 #include "gsound.h"
 
@@ -14,10 +27,12 @@ void BoardManager::dropPiece(int col){
     string pieceHere = board->getPiece(0,col);
     int rowHere = 0;
     int rowCount = board->getSize();
+    //find which row to place the piece at
     while (pieceHere != "" && rowHere < rowCount - 1){
         rowHere++;
         pieceHere = board->getPiece(rowHere,col);
     }
+    //drop a piece if location was in bounds
     if (rowHere < rowCount && pieceHere == ""){
         pieceCount++;
         string piece = "";
@@ -30,6 +45,7 @@ void BoardManager::dropPiece(int col){
         rowDifference = rowCount - rowHere - 1;
         currentCol = col;
         board->setPiece(piece, currentRow, col);
+        //set a flag for starting the drop animation if not dropping at top
         if (rowDifference > 0){
             pieceDrop = true;
         } else {
@@ -56,18 +72,17 @@ bool BoardManager::isWon() {
 }
 
 bool BoardManager::isWon(int sum, int row, int col,int dirVert, int dirHor, string target){
+    //base cases
     if (!board->inBounds(row, col)){
         return false;
     }
-
     string player = board->getPiece(row, col);
     if (sum == connectSum){
         return true;
     } else if (player == "") {
         return false;
     }
-
-    // comments here to be neater
+    //initial case for checking each direction, no direction currently locked
     if (dirVert == dirHor && dirVert == 0) {
         bool n = isWon(sum, row, col, -1, 0, player); //North
         bool s = isWon(sum, row, col, 1, 0, player); //South
@@ -78,6 +93,7 @@ bool BoardManager::isWon(int sum, int row, int col,int dirVert, int dirHor, stri
         bool sw = isWon(sum, row, col, 1, -1, player); //Southwest
         bool se = isWon(sum, row, col, 1, 1, player); //Southeast
         return (n || s || w || e || nw || ne || sw || se);
+    //check if the next piece in the locked direction belongs to the same player
     } else {
         if (player == target){
             return isWon(sum + 1, row + dirVert, col + dirHor, dirVert, dirHor, target);

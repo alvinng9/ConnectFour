@@ -1,3 +1,15 @@
+/**
+ * @file Board.cpp
+ * @author Alvin Nguyen (https://github.com/alvinng9)
+ * @author John Nguyen (https://github.com/jvn1567)
+ * @brief This class represents a Connect Four board. It has several functions to
+ * modify and read the board state.
+ * @version 0.1
+ * @date 2021-07-28
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
 #include "Board.h"
 
 Board::Board(int size){
