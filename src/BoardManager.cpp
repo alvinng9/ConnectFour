@@ -73,13 +73,14 @@ bool BoardManager::isWon() {
 
 bool BoardManager::isWon(int sum, int row, int col,int dirVert, int dirHor, string target){
     //base cases
+    if (sum == connectSum){
+        return true;
+    }
     if (!board->inBounds(row, col)){
         return false;
     }
     string player = board->getPiece(row, col);
-    if (sum == connectSum){
-        return true;
-    } else if (player == "") {
+    if (player == "") {
         return false;
     }
     //initial case for checking each direction, no direction currently locked

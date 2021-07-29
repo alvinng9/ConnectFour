@@ -31,8 +31,10 @@ private:
     BoardManager* manager;
     Board* board;
     GWindow* window;
+    //piece colors
     string colorP1;
     string colorP2;
+    //count of p1 wins, p2 wins, and ties
     vector<int> statsGame;
 
     /**

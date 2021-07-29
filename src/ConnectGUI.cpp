@@ -27,27 +27,36 @@
 #include "gcontainer.h"
 #include "gfont.h"
 
+GButton* btnStartGame;
+//container for reset and stats buttons
 GContainer* panelResetStats;
 GButton* btnStats;
 GButton* btnReset;
-GButton* btnClose;
+//label for win and turn indicator
 GLabel* lblWin;
+//text inputs for names
 GTextField* textOne;
 GTextField* textTwo;
-GButton* btnStartGame;
+//sliders for win condition and board size
 GSlider* sldrConnectSum;
 GLabel* lblConnectSumRange;
 GSlider* sldrNumTile;
 GLabel* lblNumTileRange;
+//color chooser items
 GColorChooser* colorChoose;
 GButton* btnColorP1;
 GButton* btnColorP2;
+//save and load buttons and container
+GContainer* panelSaveLoad;
 GButton* btnLoad;
 GButton* btnSave;
-GContainer* panelSaveLoad;
+
+
+//names          here or private member variables?
 string nameP1;
 string nameP2;
 
+//GButton* btnClose;
 
 
 extern ConnectGUI* connectGUI;
@@ -59,7 +68,7 @@ ConnectGUI::ConnectGUI(){
     statsGame = {0, 0, 0};
     colorP1 = "red";
     colorP2 = "blue";
-    window = new GWindow(550,400);
+    window = new GWindow(550,400, false);
     board = new Board(6);
     manager = new BoardManager(board);
     //window options
@@ -76,6 +85,7 @@ ConnectGUI::ConnectGUI(){
             checkWinner();
         }
     });
+    window->setVisible(true);
     redraw();
 }
 
@@ -255,7 +265,7 @@ void ConnectGUI::showStats() {
     string statsDraw = "There has/have been " + to_string(statsGame[2]) + " tie(s)";
     popUpWindow->drawString(statsDraw, 20, 61);
     //close button
-    btnClose = new GButton("Close");
+    GButton* btnClose = new GButton("Close");
     btnClose->setClickListener([popUpWindow] {
         popUpWindow->close();
     });

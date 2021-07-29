@@ -21,6 +21,7 @@ class BoardManager {
 private:
     Board* board;
     bool p1Turn;
+    //
     int rowDifference;
     bool pieceDrop;
     int currentRow;

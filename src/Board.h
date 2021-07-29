@@ -21,10 +21,6 @@ using namespace std;
 
 class Board{
 private:
-    /**
-     * @brief The board grid.
-     * 
-     */
     vector<vector<string>>* boardVector;
 public:
     /**
