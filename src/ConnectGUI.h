@@ -104,6 +104,13 @@ private:
      * 
      */
     void checkWinner();
+
+    /**
+     * @brief Save the names from text fields
+     *
+     */
+    void getNames();
+
 public:
     /**
      * @brief Constructs a ConnectGUI object.

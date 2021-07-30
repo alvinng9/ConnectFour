@@ -20,6 +20,7 @@
 class BoardManager {
 private:
     Board* board;
+    //true if it is Player 1's turn
     bool p1Turn;
     //difference between the row where the dropped piece will end up and the
     //row it will end up at

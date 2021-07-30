@@ -241,20 +241,7 @@ void ConnectGUI::toggle(bool setEnable){
     textTwo->setEnabled(false);
 }
 
-void ConnectGUI::loadGame(){
-    int size;
-    int sum;
-    manager->reSize(size);
-    sldrNumTile->setValue(size);
-    manager->load(sum);
-    sldrConnectSum->setValue(sum);
-    toggle(false);
-    window->setClickListener(clickHandler);
-    lblWin->setText("");
-    redraw();
-}
-
-void ConnectGUI::startGame() {
+void ConnectGUI::getNames(){
     nameP1 = textOne->getText();
     nameP2 = textTwo->getText();
     btnStats->setEnabled(true);
@@ -267,6 +254,23 @@ void ConnectGUI::startGame() {
     } else if (nameP2 == ""){
         nameP2 = "An Anonymous";
     }
+}
+
+void ConnectGUI::loadGame(){
+    int size;
+    int sum;
+    manager->reSize(size);
+    sldrNumTile->setValue(size);
+    manager->load(sum);
+    sldrConnectSum->setValue(sum);
+    toggle(false);
+    window->setClickListener(clickHandler);
+    getNames();
+    redraw();
+}
+
+void ConnectGUI::startGame() {
+    getNames();
     manager->setConnectSum(sldrConnectSum->getValue());
     toggle(false);
     window->setClickListener(clickHandler);
