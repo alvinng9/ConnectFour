@@ -11,50 +11,20 @@
  * @copyright Copyright (c) 2021
  * 
  */
+
 #include "ConnectGUI.h"
-#include "gbutton.h"
 #include "gevent.h"
-#include "glabel.h"
-#include "gtextfield.h"
 #include "gchooser.h"
-#include "gslider.h"
 #include "gcolorchooser.h"
 #include "gcanvas.h"
 #include "gcontainer.h"
 #include "gfont.h"
 
-GButton* btnStartGame;
-//container for reset and stats buttons
-GContainer* panelResetStats;
-GButton* btnStats;
-GButton* btnReset;
-//label for win and turn indicator
-GLabel* lblWin;
-//color choosers
-GCanvas* canvasColorP1;
-GCanvas* canvasColorP2;
-//text inputs for names
-GTextField* textOne;
-GTextField* textTwo;
-//sliders for win condition and board size
-GSlider* sldrConnectSum;
-GLabel* lblConnectSumRange;
+//slider for board size
 GSlider* sldrNumTile;
-GLabel* lblNumTileRange;
-//save and load buttons and container
-GContainer* panelSaveLoad;
-GButton* btnLoad;
-GButton* btnSave;
-
-
-//names          here or private member variables?
-string nameP1;
-string nameP2;
-
-
-
+//GUI accessor
 extern ConnectGUI* connectGUI;
-
+//click handler prototype
 void clickHandler(GEvent mouseEvent);
 
 ConnectGUI::ConnectGUI(){
@@ -62,18 +32,18 @@ ConnectGUI::ConnectGUI(){
     statsGame = {0, 0, 0};
     colorP1 = "red";
     colorP2 = "blue";
-    window = new GWindow(550,400, false);
+    window = new GWindow(WINDOW_WIDTH, WINDOW_HEIGHT, false);
     board = new Board(6);
     manager = new BoardManager(board);
     //window options
-    window->setLocation(300, 100);
+    window->setLocation(WINDOW_LOCATION_X, WINDOW_LOCATION_Y);
     window->setBackground("black");
     window->setExitOnClose(true);
     window->setAutoRepaint(false);
     window->setTitle("Connect Four");
     window->setRegionHorizontalAlignment("east", "center");
     makeMenu();
-    window->setTimerListener(80,[this] {
+    window->setTimerListener(ANIMATION_INTERVAL,[this] {
         if (manager->isPieceDrop()){
             lowerPiece();
         } else if (manager->isFinishedDropping()){
@@ -279,8 +249,8 @@ void ConnectGUI::startGame() {
 
 void ConnectGUI::showStats() {
     //initialize
-    GWindow* popUpWindow = new GWindow(280,100);
-    popUpWindow->setLocation(450, 300);
+    GWindow* popUpWindow = new GWindow(STATS_WIDTH, STATS_HEIGHT);
+    popUpWindow->setLocation(STATS_LOCATION_X, STATS_LOCATION_Y);
     popUpWindow->setBackground("black");
     popUpWindow->setExitOnClose(false);
     popUpWindow->setAutoRepaint(false);
@@ -326,8 +296,8 @@ void ConnectGUI::makeMenu(){
     GFont::changeFontSize(lblWin, 20);
     window->addToRegion(lblWin, "South");
     //reset button
-    panelResetStats = new GContainer;
-    btnReset = new GButton("Reset");
+    GContainer* panelResetStats = new GContainer();
+    GButton* btnReset = new GButton("Reset");
     btnReset->setClickListener([this] {
         window->removeClickListener();
         lblWin->setText("");
@@ -345,13 +315,13 @@ void ConnectGUI::makeMenu(){
     panelResetStats->add(btnStats);
     window->addToRegion(panelResetStats, "East");
     //load button
-    panelSaveLoad = new GContainer();
-    btnLoad = new GButton("Load");
+    GContainer* panelSaveLoad = new GContainer();
+    GButton* btnLoad = new GButton("Load");
     btnLoad->setClickListener([this] {
         loadGame();
     });
     //save button
-    btnSave = new GButton("Save");
+    GButton* btnSave = new GButton("Save");
     btnSave->setClickListener([this] {
         manager->save();
     });

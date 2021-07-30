@@ -14,17 +14,31 @@
 
 #ifndef CONNECTGUI_H
 #define CONNECTGUI_H
+#include <vector>
 #include "BoardManager.h"
 #include "gwindow.h"
-#include <vector>
 #include "gbutton.h"
 #include "gtextfield.h"
+#include "gslider.h"
+#include "glabel.h"
 
 
 using namespace sgl;
 
+//board dimensions and animation speed
 int static TILESIZE = 50;
 int static OFFSET = 5;
+int static ANIMATION_INTERVAL = 80;
+//window size and location
+int static WINDOW_WIDTH = 550;
+int static WINDOW_HEIGHT = 400;
+int static WINDOW_LOCATION_X = 300;
+int static WINDOW_LOCATION_Y = 100;
+//stats window size
+int static STATS_WIDTH = 280;
+int static STATS_HEIGHT = 100;
+int static STATS_LOCATION_X = 450;
+int static STATS_LOCATION_Y = 300;
 
 class ConnectGUI{
 private:
@@ -34,8 +48,25 @@ private:
     //piece colors
     string colorP1;
     string colorP2;
+    //player names
+    string nameP1;
+    string nameP2;
     //count of p1 wins, p2 wins, and ties
     vector<int> statsGame;
+    //slider for win condition
+    GSlider* sldrConnectSum;
+    //start, reset, and stats buttons
+    GButton* btnStartGame;
+    GButton* btnReset;
+    GButton* btnStats;
+    //label for win and turn indicator
+    GLabel* lblWin;
+    //color chooser canvases
+    GCanvas* canvasColorP1;
+    GCanvas* canvasColorP2;
+    //text inputs for names
+    GTextField* textOne;
+    GTextField* textTwo;
 
     /**
      * @brief Creates all GUI items for the menu on the right side.
