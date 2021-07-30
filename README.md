@@ -18,3 +18,6 @@ In our version of the game, the user can select several options to customize the
 -player names<br/>
 
 While playing, the name and color of the player who is next to move will be displayed at the bottom of the window. The current game can be saved and loaded, as well as reset, at any time during the game. The players can also view statistics on how many times each player has won, and the number of ties that have occured.
+
+# Libraries
+The GUI is built using Simple Graphics Library (SGL) by Marty Stepp, which can be found [here](https://github.com/stepp/sgl).
