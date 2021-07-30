@@ -21,13 +21,19 @@ class BoardManager {
 private:
     Board* board;
     bool p1Turn;
-    //
+    //difference between the row where the dropped piece will end up and the
+    //row it will end up at
     int rowDifference;
+    //whether a piece is dropping currently
     bool pieceDrop;
+    //the row and column of a currently dropping piece
     int currentRow;
     int currentCol;
+    //whether the piece has finished dropping and the animation and win checks need to be done
     bool finishedDropping;
+    //win chain condition
     int connectSum;
+    //number of pieces currently in the board
     int pieceCount;
 
     /**

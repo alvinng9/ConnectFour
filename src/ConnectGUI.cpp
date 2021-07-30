@@ -12,13 +12,9 @@
  * 
  */
 #include "ConnectGUI.h"
-#include <iomanip>
-#include "gthread.h"
 #include "gbutton.h"
 #include "gevent.h"
 #include "glabel.h"
-#include "gobjects.h"
-#include "gradiobutton.h"
 #include "gtextfield.h"
 #include "gchooser.h"
 #include "gslider.h"
@@ -34,6 +30,9 @@ GButton* btnStats;
 GButton* btnReset;
 //label for win and turn indicator
 GLabel* lblWin;
+//color choosers
+GCanvas* canvasColorP1;
+GCanvas* canvasColorP2;
 //text inputs for names
 GTextField* textOne;
 GTextField* textTwo;
@@ -42,10 +41,6 @@ GSlider* sldrConnectSum;
 GLabel* lblConnectSumRange;
 GSlider* sldrNumTile;
 GLabel* lblNumTileRange;
-//color chooser items
-GColorChooser* colorChoose;
-GButton* btnColorP1;
-GButton* btnColorP2;
 //save and load buttons and container
 GContainer* panelSaveLoad;
 GButton* btnLoad;
@@ -56,7 +51,6 @@ GButton* btnSave;
 string nameP1;
 string nameP2;
 
-//GButton* btnClose;
 
 
 extern ConnectGUI* connectGUI;
@@ -77,6 +71,7 @@ ConnectGUI::ConnectGUI(){
     window->setExitOnClose(true);
     window->setAutoRepaint(false);
     window->setTitle("Connect Four");
+    window->setRegionHorizontalAlignment("east", "center");
     makeMenu();
     window->setTimerListener(80,[this] {
         if (manager->isPieceDrop()){
@@ -168,33 +163,46 @@ void ConnectGUI::makeSliders(){
     //board size
     GLabel* lblNumTile = new GLabel("Board Size");
     sldrNumTile = new GSlider(5, 7, 6);
-    lblNumTileRange = new GLabel("  5      6      7");
-    lblNumTileRange->setColor("White");
+    GContainer* panelNumTile = new GContainer();
+    GLabel* minNumTile = new GLabel("5");
+    GLabel* maxNumTile = new GLabel("7");
+    minNumTile->setColor("White");
+    maxNumTile->setColor("White");
+    panelNumTile->add(minNumTile);
+    panelNumTile->add(sldrNumTile);
+    panelNumTile->add(maxNumTile);
+    lblNumTile->setColor("White");
     window->addToRegion(lblNumTile, "East");
-    window->addToRegion(lblNumTileRange, "East");
-    window->addToRegion(sldrNumTile, "East");
+    window->addToRegion(panelNumTile, "East");
     //win condition
     GLabel* lblConnectSum = new GLabel("Consecutive to Win");
     sldrConnectSum = new GSlider(3, 5, 4);
-    lblConnectSumRange = new GLabel("  3      4      5");
-    lblConnectSumRange->setColor("White");
+    GContainer* panelConnectSum = new GContainer();
+    GLabel* minSum = new GLabel("3");
+    GLabel* maxSum = new GLabel("5");
+    minSum->setColor("White");
+    maxSum->setColor("White");
+    panelConnectSum->add(minSum);
+    panelConnectSum->add(sldrConnectSum);
+    panelConnectSum->add(maxSum);
+    lblConnectSum->setColor("White");
     window->addToRegion(lblConnectSum, "East");
-    window->addToRegion(lblConnectSumRange, "East");
-    window->addToRegion(sldrConnectSum, "East");
+    window->addToRegion(panelConnectSum, "East");
 }
 
-GButton* ConnectGUI::makeColorChooser(string& color){
+GCanvas* ConnectGUI::makeColorChooser(string& color){
     GCanvas* colorPreview = new GCanvas(20, 20, color);
-    GContainer* panelColor = new GContainer();
-    GButton* btnColor = new GButton("Color for Player 1");
-    btnColor->setClickListener([colorPreview, &color] {
+    colorPreview->setClickListener([colorPreview, &color] {
         color = GColorChooser::showDialog("Choose a color");
         colorPreview->setBackground(color);
     });
-    panelColor->add(btnColor);
+    GContainer* panelColor = new GContainer();
+    GLabel* lblColor = new GLabel("Choose a color: ");
+    lblColor->setColor("White");
+    panelColor->add(lblColor);
     panelColor->add(colorPreview);
     window->addToRegion(panelColor, "East");
-    return btnColor;
+    return colorPreview;
 }
 
 GTextField* ConnectGUI::playerName(string player){
@@ -207,8 +215,21 @@ GTextField* ConnectGUI::playerName(string player){
 }
 
 void ConnectGUI::toggle(bool setEnable){
-    btnColorP1->setEnabled(setEnable);
-    btnColorP2->setEnabled(setEnable);
+    //color preview canvases
+    if (setEnable) {
+        canvasColorP1->setClickListener([this] {
+            colorP1 = GColorChooser::showDialog("Choose a color");
+            canvasColorP1->setBackground(colorP1);
+        });
+            canvasColorP2->setClickListener([this] {
+            colorP2 = GColorChooser::showDialog("Choose a color");
+            canvasColorP2->setBackground(colorP2);
+        });
+    } else {
+        canvasColorP1->removeClickListener();
+        canvasColorP2->removeClickListener();
+    }
+    //other menu interactors
     sldrConnectSum->setEnabled(setEnable);
     sldrNumTile->setEnabled(setEnable);
     btnStartGame->setEnabled(setEnable);
@@ -280,8 +301,8 @@ void ConnectGUI::makeMenu(){
         redraw();
     });
     //color choosers
-    btnColorP1 = makeColorChooser(colorP1);
-    btnColorP2 = makeColorChooser(colorP2);
+    canvasColorP1 = makeColorChooser(colorP1);
+    canvasColorP2 = makeColorChooser(colorP2);
     //name setters
     textOne = playerName("1");
     textTwo = playerName("2");
@@ -333,8 +354,11 @@ void ConnectGUI::makeMenu(){
 
 void clickHandler(GEvent mouseEvent){
     int col = mouseEvent.getX() / TILESIZE;
-    connectGUI->getBoardManager()->dropPiece(col);
-    connectGUI->redraw();
+    int row = mouseEvent.getY() / TILESIZE;
+    if (col < sldrNumTile->getValue() && row < sldrNumTile->getValue()) {
+        connectGUI->getBoardManager()->dropPiece(col);
+        connectGUI->redraw();
+    }
 }
 
 

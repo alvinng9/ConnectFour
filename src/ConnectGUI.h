@@ -53,9 +53,9 @@ private:
      * @brief Creates the elements for allowing the user to pick their piece colors.
      * 
      * @param color the string that stores the color of the player's piece
-     * @return a GButton* that allows the user to select a color
+     * @return a GCanvas* that allows the user to select a color
      */
-    GButton* makeColorChooser(string& color);
+    GCanvas* makeColorChooser(string& color);
 
     /**
      * @brief Creates the elements for allowing the user to change their names.
