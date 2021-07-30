@@ -9,6 +9,8 @@ Connect Four is a board game where two players take turns dropping a piece down 
 
 ![ezgif-7-d38b47a4c7a7](https://user-images.githubusercontent.com/56368354/127702860-ee5dec05-88e1-4b86-9cd4-953a19d718ee.gif)
 
+# Features
+
 In our version of the game, the user can select several options to customize their game, including:<br/>
 -size of the board<br/>
 -number of pieces required to win<br/>
