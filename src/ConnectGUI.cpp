@@ -101,24 +101,25 @@ void ConnectGUI::checkWinner(){
     if (manager->isWon()){
         bool p1Turn = !manager->isP1Turn();
         string winnerName;
+        redraw();
         if (p1Turn){
+            lblWin->setColor(colorP1);
             statsGame[0]++;
             winnerName = nameP1;
         } else {
+            lblWin->setColor(colorP2);
             statsGame[1]++;
             winnerName = nameP2;
         }
-        redraw();
         winnerName += " Won!";
         lblWin->setText(winnerName);
-        btnReset->setEnabled(true);
         window->removeClickListener();
     //manage ties
     } else if (manager->getPieceCount() == pow(board->getSize(),2)){
         statsGame[2]++;
         redraw();
+        lblWin->setColor("white");
         lblWin->setText("The Game Has Tied");
-        btnReset->setEnabled(true);
         window->removeClickListener();
     }
 }
@@ -146,10 +147,13 @@ void ConnectGUI::redraw(){
     if (!btnStartGame->isEnabled()){
         string name;
         if (manager->isP1Turn()){
+            lblWin->setColor(colorP1);
             name = nameP1;
         } else {
+            lblWin->setColor(colorP2);
             name = nameP2;
         }
+
         lblWin->setText(name + "'s turn");
     }
     window->repaint();
@@ -247,13 +251,13 @@ void ConnectGUI::loadGame(){
     toggle(false);
     window->setClickListener(clickHandler);
     lblWin->setText("");
-    btnReset->setEnabled(false);
     redraw();
 }
 
 void ConnectGUI::startGame() {
     nameP1 = textOne->getText();
     nameP2 = textTwo->getText();
+    btnStats->setEnabled(true);
     string name;
     if (nameP1 == "" && nameP2 == "") {
         nameP1 = "An Anonymous";
@@ -271,7 +275,7 @@ void ConnectGUI::startGame() {
 
 void ConnectGUI::showStats() {
     //initialize
-    GWindow* popUpWindow = new GWindow(250,100);
+    GWindow* popUpWindow = new GWindow(280,100);
     popUpWindow->setLocation(450, 300);
     popUpWindow->setBackground("black");
     popUpWindow->setExitOnClose(false);
@@ -279,9 +283,9 @@ void ConnectGUI::showStats() {
     popUpWindow->setTitle("Statistics");
     popUpWindow->setColor("White");
     //write stats
-    string statsP1 = textOne->getText() + " has won " + to_string(statsGame[0]) + " time(s)";
+    string statsP1 = nameP1 + " has won " + to_string(statsGame[0]) + " time(s)";
     popUpWindow->drawString(statsP1, 20, 21);
-    string statsP2 = textTwo->getText() + " has won " + to_string(statsGame[1]) + " time(s)";
+    string statsP2 = nameP2 + " has won " + to_string(statsGame[1]) + " time(s)";
     popUpWindow->drawString(statsP2, 20, 41);
     string statsDraw = "There has/have been " + to_string(statsGame[2]) + " tie(s)";
     popUpWindow->drawString(statsDraw, 20, 61);
@@ -320,9 +324,8 @@ void ConnectGUI::makeMenu(){
     //reset button
     panelResetStats = new GContainer;
     btnReset = new GButton("Reset");
-    btnReset->setEnabled(false);
     btnReset->setClickListener([this] {
-        btnReset->setEnabled(false);
+        window->removeClickListener();
         lblWin->setText("");
         manager->resetBoard(sldrNumTile->getValue());
         toggle(true);
@@ -330,6 +333,7 @@ void ConnectGUI::makeMenu(){
     });
     //stats button
     btnStats = new GButton("Statistics");
+    btnStats->setEnabled(false);
     btnStats->setClickListener([this] {
         showStats();
     });

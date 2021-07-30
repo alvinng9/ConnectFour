@@ -52,15 +52,12 @@ void BoardManager::dropPiece(int col){
             finishedDropping = true;
         }
         p1Turn = !p1Turn;
-        //sgl::GSound::playSound("woosh.mp3");
+        sgl::GSound::playSound("wooshh.mp3");
     }
 }
 
 bool BoardManager::isWon() {
     finishedDropping = false;
-    if (pieceCount == pow(board->getSize(),2)){
-        return false;
-    }
     for (int row = 0; row < board->getSize(); row++){
         for (int col = 0; col < board->getSize(); col++){
             if (isWon(0, row, col, 0, 0, " ")){
